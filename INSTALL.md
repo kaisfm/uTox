@@ -11,7 +11,7 @@
 
 Dependencies on Debian Jessie:
 ```bash
-sudo apt-get install libv4l-dev libopenal-dev libfreetype6-dev libdbus-1-dev libxrender-dev libfontconfig1-dev libxext-dev libxft-dev
+sudo apt-get install libv4l-dev libopenal-dev libfreetype6-dev libdbus-1-dev libxrender-dev libfontconfig1-dev libxext-dev
 ```
 
 Compile:
@@ -48,7 +48,11 @@ or if you built toxcore statically:
 ## OS X
 You need XQuartz on 10.8+, no video yet.
 
-> cc -o uTox.o *.c -I/opt/X11/include -L/opt/X11/lib -lX11 -lXrender -lXext -ltoxcore -ltoxav -ltoxdns -framework OpenAL -pthread -lresolv -ldl -lm -lfontconfig -lfreetype -lvpx -I/opt/X11/include/freetype2
+> cc -o uTox.o *.c png/png.c -I/opt/X11/include -L/opt/X11/lib -lX11 -lXrender -lXext -ltoxcore -ltoxav -ltoxdns -framework OpenAL -pthread -lresolv -ldl -lm -lfontconfig -lfreetype -lvpx -I/opt/X11/include/freetype2
+
+If you are relying on Homebrew to provide libraries and headers, you can use the following line instead to save you the trouble:
+
+> cc -o uTox.o *.c png/png.c -L/usr/local/lib -I/usr/local/include -I/opt/X11/include -L/opt/X11/lib -lX11 -lXrender -lXext -ltoxcore -ltoxav -ltoxdns -framework OpenAL -pthread -lresolv -ldl -lm -lfontconfig -lfreetype -lvpx -I/opt/X11/include/freetype2
 
 <a name="windows" />
 ## Windows

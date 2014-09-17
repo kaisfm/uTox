@@ -1022,46 +1022,48 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR cmd, int n
     RegisterClassW(&wc2);
 
     uint16_t langid = GetUserDefaultUILanguage() & 0xFFFF;
-    switch(langid) {
-    default:
-    case 0x0C07:
+    switch(langid & 0xFF) {
+    case 0x07:
         LANG = LANG_DE;
         break;
-    case 0x0409:
+    default:
+    case 0x09:
         LANG = LANG_EN;
         break;
-    case 0x2C0A:
+    case 0x0A:
         LANG = LANG_ES;
         break;
-    case 0x080C:
+    case 0x0C:
         LANG = LANG_FR;
         break;
-    case 0x0410:
+    case 0x10:
         LANG = LANG_IT;
         break;
-    case 0x0411:
+    case 0x11:
         LANG = LANG_JA;
         break;
-    case 0x0813:
+    case 0x13:
         LANG = LANG_NL;
         break;
-    case 0x0415:
+    case 0x15:
         LANG = LANG_PL;
         break;
-    case 0x0419:
+    case 0x19:
         LANG = LANG_RU;
-	break;
-    case 0x0422:
+        break;
+    case 0x22:
         LANG = LANG_UA;
         break;
-    case 0x0426:
+    case 0x26:
         LANG = LANG_LV;
         break;
-    case 0x0804:
-        LANG = LANG_CN;
-        break;
-    case 0x0404:
-        LANG = LANG_TW;
+    case 0x04:
+        if (langid == 0x0404) {
+            LANG = LANG_TW;
+        } else { /* if 0x0804 */
+            LANG = LANG_CN;
+        }
+
         break;
     }
 
@@ -1069,7 +1071,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR cmd, int n
 
     UTOX_SAVE *save = config_load();
 
-    hwnd = CreateWindowExW(0, classname, L"Tox", WS_OVERLAPPEDWINDOW, save->window_x, save->window_y, save->window_width, save->window_height, NULL, NULL, hInstance, NULL);
+    hwnd = CreateWindowExW(0, classname, L"Tox", WS_OVERLAPPEDWINDOW, save->window_x, save->window_y, MAIN_WIDTH, MAIN_HEIGHT, NULL, NULL, hInstance, NULL);
 
     free(save);
 

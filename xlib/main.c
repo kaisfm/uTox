@@ -387,28 +387,14 @@ void address_to_clipboard(void)
 
 void openurl(char_t *str)
 {
-    char cmd[1024], *p = cmd;
-
-    #ifdef __APPLE__
-    p += sprintf(p, "open \"");
-    #else
-    p += sprintf(p, "xdg-open \'");
-    #endif
-
-    while(*str) {
-        //escape these characters
-        if(*str == '\"' || *str == '\\' || *str == '\'' || *str == '$') {
-            *p++ = '\\';
-        }
-        *p++ = *str++;
+    char *cmd = "xdg-open";
+#ifdef __APPLE__
+    cmd = "open";
+#endif
+    if(!fork()) {
+        execlp(cmd, cmd, str, (char *)0);
+        exit(127);
     }
-    *p++ = '\'';
-    *p++ = ' ';
-    *p++ = '&';
-    *p = 0;
-
-    debug("cmd: %s\n", cmd);
-    system(cmd);
 }
 
 void openfilesend(void)

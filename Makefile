@@ -1,18 +1,30 @@
+## OPTIONS ##
+# set to anything else to disable DBUS
+DBUS = 1
+
+DEPS = fontconfig freetype2 libtoxav libtoxcore
+DEPS += libv4lconvert openal vpx x11 xext xrender
+ifeq ($(DBUS), 1)
+	DEPS += dbus-1
+endif
+
 UNAME_S := $(shell uname -s)
 
-CFLAGS += $(shell pkg-config --cflags freetype2 x11 openal)
-CFLAGS += $(shell pkg-config --cflags dbus-1)
 CFLAGS += -g -pthread -std=gnu99
-LDFLAGS += $(shell pkg-config --libs freetype2 x11 openal)
-LDFLAGS += $(shell pkg-config --libs dbus-1)
-LDFLAGS += -lX11 -lXft -lXrender -ltoxcore -ltoxav -ltoxdns -lopenal -pthread -lm -lfontconfig -lv4lconvert -lvpx -lXext
+CFLAGS += $(shell pkg-config --cflags $(DEPS))
+LDFLAGS = -pthread -lm
+LDFLAGS += $(shell pkg-config --libs $(DEPS))
 
-ifeq ($(UNAME_S),Linux)
+ifneq ($(DBUS), 1)
+	CFLAGS += -DNO_DBUS
+endif
+
+ifeq ($(UNAME_S), Linux)
 	LDFLAGS += -lresolv -ldl
 endif
 
-DESTDIR?=	# empty
-PREFIX?=	/usr/local
+DESTDIR ?=
+PREFIX ?= /usr/local
 
 SRC = $(wildcard *.c png/png.c)
 OBJ = $(SRC:.c=.o)
@@ -20,7 +32,8 @@ OBJ = $(SRC:.c=.o)
 all: utox
 
 utox: $(OBJ)
-	$(CC) $(CFLAGS) -o utox $(OBJ) $(LDFLAGS)
+	@echo "  LD    $@"
+	@$(CC) $(CFLAGS) -o utox $(OBJ) $(LDFLAGS)
 
 install: utox
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
@@ -54,7 +67,6 @@ install: utox
 	install -m 644 icons/utox-256x256.png $(DESTDIR)$(PREFIX)/share/icons/hicolor/256x256/apps/utox.png
 	mkdir -p $(DESTDIR)$(PREFIX)/share/icons/hicolor/512x512/apps
 	install -m 644 icons/utox-512x512.png $(DESTDIR)$(PREFIX)/share/icons/hicolor/512x512/apps/utox.png
-
 	mkdir -p $(DESTDIR)$(PREFIX)/share/icons/hicolor/scalable/apps
 	install -m 644 icons/utox.svg $(DESTDIR)$(PREFIX)/share/icons/hicolor/scalable/apps/utox.svg
 
@@ -64,7 +76,8 @@ install: utox
 main.o: xlib/main.c xlib/keysym2ucs.c
 
 .c.o:
-	$(CC) $(CFLAGS) -o $@ -c $<
+	@echo "  CC    $@"
+	@$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm -f utox *.o png/*.o
